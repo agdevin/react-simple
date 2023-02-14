@@ -12,9 +12,11 @@ import { literal, object, string, TypeOf } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormInput from '../components/FormInput';
 import {useNavigate } from 'react-router-dom';
-import UserService from "../services/user.service";
-import axios, {AxiosResponse} from 'axios';
-// 👇 Login Schema with Zod
+import UserService from '../services/user.service';
+import axios, { AxiosResponse  } from 'axios';
+const api = new UserService();
+
+// � Login Schema with Zod
 const loginSchema = object({
   username: string().min(1, 'UserName is required'),
   password: string()
@@ -23,35 +25,47 @@ const loginSchema = object({
     .max(32, 'Password must be less than 32 characters'),
   persistUser: literal(true).optional(),
 });
-
-// 👇 Infer the Schema to get the TS Type
+// � Infer the Schema to get the TS Type
 type ILogin = TypeOf<typeof loginSchema>;
 
 const LoginPage: FC = () => {
-
   const navigate = useNavigate();
-
-  // 👇 Default Values
+  // � Default Values
   const defaultValues: ILogin = {
     username: '',
     password: '',
   };
 
-  // 👇 The object returned from useForm Hook
+  // � The object returned from useForm Hook
   const methods = useForm<ILogin>({
     resolver: zodResolver(loginSchema),
     defaultValues,
   });
 
-  // 👇 Submit Handler
+  // � Submit Handler
   const onSubmitHandler: SubmitHandler<ILogin> = (values: ILogin) => {
+    console.log(values.username);
+    /*
+    const data = {
+      username: values.username,
+      password: values.password
+    };
+    api
+      .sendPostRequest('loginAdmin', data)
+      .then((response: AxiosResponse<string>) => {
+        console.log(response);
+      })
+      .catch((err: Error) => {
+        console.log(err);
+      });
+    */
     axios.get('http://localhost:8080/admin/users')
       .then((response: AxiosResponse) => {
           console.log(response.data);
     });
   };
 
-  // 👇 JSX to be rendered
+  // � JSX to be rendered
   return (
     <Container
       sx={{ height: '90vh', backgroundColor: { xs: '#fff', md: '#fff' } }}

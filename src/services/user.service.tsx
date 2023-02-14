@@ -1,11 +1,21 @@
 import axios from 'axios';
-
-const API_URL = 'http://localhost:8080/api/test/';
-
-class UserService {
-  getPublicContent() {
-    return axios.get(API_URL + 'all');
+export default class UserService {
+  async sendPostRequest(endPoint : string, data : any){
+    return new Promise<string>((resolve, reject) => {
+      const url = 'http://localhost:8080/api/';
+      axios
+        .post(
+          `${url}/${endPoint}`, data)
+        .then(res => {
+          if (res && res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(`Error`);
+          }
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 }
-
-export default new UserService();
